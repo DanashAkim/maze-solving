@@ -6,6 +6,7 @@
 #include "sensor_msgs/LaserScan.h" 
 #include "nav_msgs/OccupancyGrid.h"
 #include "nav_msgs/MapMetaData.h"
+#include "std_srvs/Empty.h"
 
 ros::Subscriber sub;
 ros::Publisher pub;
@@ -145,6 +146,8 @@ public:
     
       ROS_ERROR("move_base has failed");
       ROS_INFO("Action STATE: %s",state.toString().c_str());
+      std_srvs::Empty emptymsg;
+    ros::service::call("/move_base/clear_costmaps",emptymsg);
       ac.cancelAllGoals();
     }
   }
@@ -182,9 +185,10 @@ int main(int argc, char** argv){
   sub = n.subscribe("/scan", 100, scanCallback);
   ros::Subscriber map_sub = n.subscribe("/map",1,mapCallBack);
 
+    MyNode my_node;
 
   do {
-    MyNode my_node;
+
     my_node.sendRandomGoal();
   } while(!finish);
   ROS_INFO("Congratulations!!!!!!!!!!");
